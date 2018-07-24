@@ -14,7 +14,7 @@ from payments import PaymentStatus, PurchasedItem
 from payments.models import BasePayment
 from prices import Money, TaxedMoney
 
-from . import FulfillmentStatus, OrderStatus
+from . import FulfillmentStatus, OrderStatus, SuplierOrderStatus
 from ..account.models import Address
 from ..core.models import BaseNote
 from ..core.utils import build_absolute_uri
@@ -22,6 +22,7 @@ from ..core.utils.taxes import ZERO_TAXED_MONEY
 from ..discount.models import Voucher
 from ..product.models import ProductVariant
 from ..shipping.models import ShippingMethodCountry
+from ..product.models import ProductSuplier
 
 
 class OrderQueryset(models.QuerySet):
@@ -38,6 +39,16 @@ class OrderQueryset(models.QuerySet):
             amount_paid=Sum('payments__captured_amount')).filter(
                 total_gross__lte=F('amount_paid'))
 
+class SuplierOrder(models.Model):
+    suplier = models.ForeignKey(
+        ProductSuplier, blank=True, null=True, related_name='orders',
+        on_delete=models.SET_NULL)
+    total_net = MoneyField(
+        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES, default=0)
+    status = models.CharField(
+        max_length=32, default=SuplierOrderStatus.CURRENT,
+        choices=OrderStatus.CHOICES)
 
 class Order(models.Model):
     created = models.DateTimeField(
@@ -118,10 +129,10 @@ class Order(models.Model):
         return self.user.email if self.user else self.user_email
 
     def _index_billing_phone(self):
-        return self.billing_address.phone
+        return self.user.phone
 
     def _index_shipping_phone(self):
-        return self.shipping_address.phone
+        return self.user.phone
 
     def __iter__(self):
         return iter(self.lines.all())
@@ -180,6 +191,9 @@ class Order(models.Model):
 
 
 class OrderLine(models.Model):
+    suplierorder = models.ForeignKey(
+        SuplierOrder, related_name='items', editable=False, on_delete=models.SET_NULL,
+        blank=True, null=True)
     order = models.ForeignKey(
         Order, related_name='lines', editable=False, on_delete=models.CASCADE)
     variant = models.ForeignKey(
@@ -203,7 +217,7 @@ class OrderLine(models.Model):
         net_field='unit_price_net', gross_field='unit_price_gross')
     tax_rate = models.DecimalField(
         max_digits=5, decimal_places=2, default='0.0')
-
+    is_ready = models.BooleanField(default = False)
     def __str__(self):
         return self.product_name
 

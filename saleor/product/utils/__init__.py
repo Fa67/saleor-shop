@@ -10,6 +10,25 @@ from ...core.utils import get_paginator_items
 from ...core.utils.filters import get_now_sorted_by
 from ..forms import ProductForm
 from .availability import products_with_availability
+from django.db.models import Max, Min
+from random import randint
+
+
+def random_queryset_elements(qs, number):
+    assert number <= 10000, 'too large'
+    max_pk = qs.aggregate(Max('pk'))['pk__max']
+    min_pk = qs.aggregate(Min('pk'))['pk__min']
+    ids = set()
+    while len(ids) < number:
+        next_pk = randint(min_pk, max_pk)
+        while next_pk in ids:
+            next_pk = randint(min_pk, max_pk)
+        try:
+            found = qs.get(pk=next_pk)
+            ids.add(found.pk)
+            yield found
+        except qs.model.DoesNotExist:
+            pass
 
 
 def products_visible_to_user(user):
@@ -27,11 +46,11 @@ def products_with_details(user):
         'attributes__values', 'product_type__product_attributes__values')
     return products
 
-
 def products_for_homepage():
     user = AnonymousUser()
     products = products_with_details(user)
-    products = products.filter(is_featured=True)
+    products = products.filter(is_featured = True)
+    products = random_queryset_elements(products, 8)
     return products
 
 

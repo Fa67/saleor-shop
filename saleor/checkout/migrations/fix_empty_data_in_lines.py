@@ -17,7 +17,7 @@ def convert_lines_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('checkout', '0002_auto_20161014_1221'),
+        ('checkout', '0002_auto_20170206_0407'),
     ]
 
     replaces = [

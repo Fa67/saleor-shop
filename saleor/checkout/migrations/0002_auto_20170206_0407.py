@@ -11,7 +11,7 @@ import jsonfield.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('checkout', '0001_auto_20170113_0435'),
+        ('checkout', '0001_initial'),
     ]
 
     replaces = [

@@ -96,6 +96,10 @@ def product_select_type(request):
     template = 'dashboard/product/modal/select_type.html'
     return TemplateResponse(request, template, ctx, status=status)
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 @staff_member_required
 @permission_required('product.edit_product')
@@ -116,14 +120,14 @@ def product_create(request, type_pk):
     else:
         variant_form = None
         variant_errors = False
-
+    logger.error(product_form.is_valid())
     if product_form.is_valid() and not variant_errors:
         product = product_form.save()
         if create_variant:
             variant.product = product
             variant_form.save()
         msg = pgettext_lazy(
-            'Dashboard message', 'Added product %s') % (product,)
+            'Dashboard message', 'Добавлен товар %s') % (product,)
         messages.success(request, msg)
         return redirect('dashboard:product-details', pk=product.pk)
     ctx = {
@@ -154,7 +158,7 @@ def product_edit(request, pk):
         if edit_variant:
             variant_form.save()
         msg = pgettext_lazy(
-            'Dashboard message', 'Updated product %s') % (product,)
+            'Dashboard message', 'Обновлен продукт %s') % (product,)
         messages.success(request, msg)
         return redirect('dashboard:product-details', pk=product.pk)
     ctx = {

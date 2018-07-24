@@ -5,7 +5,7 @@
 {% block forms %}
   <form method="post" novalidate class="checkout__shipping">
     {% csrf_token %}
-    <h2>{% trans "Shipping address" context "Checkout shipping address title" %}</h2>
+    <h2>{% trans "Введите данные для совершения заказа" context "Checkout shipping address title" %}</h2>
     {% if request.user.is_authenticated %}
       {% include "checkout/snippets/addresses_form.html" with addresses_form=user_form addresses=additional_addresses address_form=address_form only %}
     {% else %}

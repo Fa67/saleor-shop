@@ -28,8 +28,7 @@ def details(request, token):
     orders = Order.objects.confirmed().prefetch_related(
         'lines__variant', 'fulfillments', 'fulfillments__lines',
         'fulfillments__lines__order_line')
-    orders = orders.select_related(
-        'billing_address', 'shipping_address', 'user')
+    orders = orders.select_related('user')
     order = get_object_or_404(orders, token=token)
     notes = order.notes.filter(is_public=True)
     ctx = {'order': order, 'notes': notes}
@@ -163,28 +162,15 @@ def checkout_success(request, token):
     is attached to their account.
     """
     order = get_object_or_404(Order, token=token)
+    lines = order.lines
+    for line in lines:
+        suplierorder = SuplierOrder.objects.get_or_create(status="CURRENT", suplier = line.variant.product.suplier)[0]
+        line.suplierorder = suplierorder
+        suplierorder.total_net += line.get_total()
     email = order.user_email
     ctx = {'email': email, 'order': order}
     if request.user.is_authenticated:
         return TemplateResponse(request, 'order/checkout_success.html', ctx)
-    form_data = request.POST.copy()
-    if form_data:
-        form_data.update({'email': email})
-    register_form = PasswordForm(form_data or None)
-    if register_form.is_valid():
-        register_form.save()
-        password = register_form.cleaned_data.get('password')
-        user = auth.authenticate(
-            request=request, email=email, password=password)
-        auth.login(request, user)
-        attach_order_to_user(order, user)
-        return redirect('order:details', token=token)
-    user_exists = User.objects.filter(email=email).exists()
-    login_form = LoginForm(
-        initial={'username': email}) if user_exists else None
-    ctx.update({'form': register_form, 'login_form': login_form})
-    return TemplateResponse(
-        request, 'order/checkout_success_anonymous.html', ctx)
 
 
 @login_required

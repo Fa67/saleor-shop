@@ -94,9 +94,9 @@ class AddressForm(forms.ModelForm):
         exclude = []
         labels = {
             'first_name': pgettext_lazy(
-                'Personal name', 'Given name'),
+                'Personal name', 'Имя'),
             'last_name': pgettext_lazy(
-                'Personal name', 'Family name'),
+                'Personal name', 'Фамилия'),
             'company_name': pgettext_lazy(
                 'Company or organization', 'Company or organization'),
             'street_address_1': pgettext_lazy(
@@ -110,14 +110,14 @@ class AddressForm(forms.ModelForm):
             'postal_code': pgettext_lazy(
                 'Postal code', 'Postal code'),
             'country': pgettext_lazy(
-                'Country', 'Country'),
+                'Country', 'Страна'),
             'country_area': pgettext_lazy(
                 'Country area', 'State or province'),
             'phone': pgettext_lazy(
                 'Phone number', 'Phone number')}
 
     phone = PossiblePhoneNumberFormField(
-        widget=PhonePrefixWidget, required=False)
+        widget=PhonePrefixWidget, required=True)
 
     def __init__(self, *args, **kwargs):
         autocomplete_type = kwargs.pop('autocomplete_type', None)

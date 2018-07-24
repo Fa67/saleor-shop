@@ -94,10 +94,21 @@ class ProductQuerySet(models.QuerySet):
             Q(is_published=True))
 
 
+class ProductSuplier(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    curent_sum = MoneyField(
+        currency=settings.DEFAULT_CURRENCY, max_digits=12,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=0)
+    def __str__(self):
+        return self.name
+
 class Product(SeoModel):
     product_type = models.ForeignKey(
         ProductType, related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
+    suplier = models.ForeignKey(
+        ProductSuplier, related_name='products', on_delete=models.CASCADE, null = True)
     description = models.TextField()
     category = models.ForeignKey(
         Category, related_name='products', on_delete=models.CASCADE)
@@ -187,7 +198,7 @@ class ProductVariant(models.Model):
     images = models.ManyToManyField('ProductImage', through='VariantImage')
     track_inventory = models.BooleanField(default=True)
     quantity = models.IntegerField(
-        validators=[MinValueValidator(0)], default=Decimal(1))
+        validators=[MinValueValidator(0)], default=Decimal(999999))
     quantity_allocated = models.IntegerField(
         validators=[MinValueValidator(0)], default=Decimal(0))
     cost_price = MoneyField(

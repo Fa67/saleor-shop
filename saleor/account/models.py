@@ -22,16 +22,16 @@ class PossiblePhoneNumberField(PhoneNumberField):
 
 
 class Address(models.Model):
-    first_name = models.CharField(max_length=256, blank=True)
-    last_name = models.CharField(max_length=256, blank=True)
-    company_name = models.CharField(max_length=256, blank=True)
-    street_address_1 = models.CharField(max_length=256, blank=True)
-    street_address_2 = models.CharField(max_length=256, blank=True)
-    city = models.CharField(max_length=256, blank=True)
-    city_area = models.CharField(max_length=128, blank=True)
-    postal_code = models.CharField(max_length=20, blank=True)
-    country = CountryField()
-    country_area = models.CharField(max_length=128, blank=True)
+    first_name = models.CharField(max_length=256, default = "")
+    last_name = models.CharField(max_length=256, default = "")
+    company_name = models.CharField(max_length=256, default = "")
+    street_address_1 = models.CharField(max_length=256, default = "")
+    street_address_2 = models.CharField(max_length=256, default = "")
+    city = models.CharField(max_length=256,default = "")
+    city_area = models.CharField(max_length=128, default = "")
+    postal_code = models.CharField(max_length=20, default = "")
+    country = CountryField(default = "Russian Federation")
+    country_area = models.CharField(max_length=128, default = "")
     phone = PossiblePhoneNumberField(blank=True, default='')
 
     @property
@@ -45,12 +45,8 @@ class Address(models.Model):
 
     def __repr__(self):
         return (
-            'Address(first_name=%r, last_name=%r, company_name=%r, '
-            'street_address_1=%r, street_address_2=%r, city=%r, '
-            'postal_code=%r, country=%r, country_area=%r, phone=%r)' % (
-                self.first_name, self.last_name, self.company_name,
-                self.street_address_1, self.street_address_2, self.city,
-                self.postal_code, self.country, self.country_area,
+            'Address(first_name=%r, last_name=%r, country=%r, country_area=%r, phone=%r)' % (
+                self.first_name, self.last_name, self.country, self.country_area,
                 self.phone))
 
     def __eq__(self, other):
@@ -106,6 +102,11 @@ def get_token():
 
 
 class User(PermissionsMixin, AbstractBaseUser):
+    first_name = models.CharField(max_length=256, default = "")
+    last_name = models.CharField(max_length=256, default = "")
+
+    phone = PossiblePhoneNumberField(blank=True, default='')
+
     email = models.EmailField(unique=True)
     addresses = models.ManyToManyField(
         Address, blank=True, related_name='user_addresses')
@@ -128,15 +129,15 @@ class User(PermissionsMixin, AbstractBaseUser):
     class Meta:
         permissions = (
             ('view_user',
-             pgettext_lazy('Permission description', 'Can view users')),
+             pgettext_lazy('Permission description', 'Может просматривать пользователей')),
             ('edit_user',
-             pgettext_lazy('Permission description', 'Can edit users')),
+             pgettext_lazy('Permission description', 'Может редактировать пользователей')),
             ('view_staff',
-             pgettext_lazy('Permission description', 'Can view staff')),
+             pgettext_lazy('Permission description', 'Может смотреть админов')),
             ('edit_staff',
-             pgettext_lazy('Permission description', 'Can edit staff')),
+             pgettext_lazy('Permission description', 'Может изменять админов')),
             ('impersonate_user',
-             pgettext_lazy('Permission description', 'Can impersonate users')))
+             pgettext_lazy('Permission description', 'Может заходить от лица других пользователей')))
 
     def get_full_name(self):
         return self.email
@@ -145,10 +146,9 @@ class User(PermissionsMixin, AbstractBaseUser):
         return self.email
 
     def get_ajax_label(self):
-        address = self.default_billing_address
-        if address:
+        if self.first_name:
             return '%s %s (%s)' % (
-                address.first_name, address.last_name, self.email)
+                self.first_name, self.last_name, self.email)
         return self.email
 
 

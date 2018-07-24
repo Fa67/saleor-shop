@@ -36,8 +36,8 @@
     <div class="row cart-dropdown__total" data-quantity="{{ quantity }}">
       <div class="col-md-8">
         <h3>
-          {% trans "Subtotal" context "Order subtotal" %}<br>
-          <span>{% trans "Shipment and taxes calculated at checkout" context "Cart dropdown text" %}</span>
+          Итого<br>
+          <span>Включая НДС</span>
         </h3>
       </div>
       <div class="col-md-4">
@@ -59,12 +59,12 @@
     </div>
   {% else %}
     <div class="text-md-center cart-dropdown__empty">
-      <h3>{% trans "There are no products in your shopping cart." context "Empty cart message" %}</h3>
+      <h3>{% trans "Ваша корзина пуста." context "Empty cart message" %}</h3>
       <img data-src="{% static 'images/empty-cart-bg.png' %}"
            data-srcset="{% static 'images/empty-cart-bg.png' %} 1x, {% static 'images/empty-cart-bg2x.png' %} 2x"
            src="{% placeholder size=255 %}"
            class="lazyload lazypreload">
-      <a href="{% url 'home' %}" class="btn primary">{% trans "Check out our sales" context "Empty cart link" %}</a>
+      <a href="{% url 'home' %}" class="btn primary">{% trans "Смотреть список товаров" context "Empty cart link" %}</a>
     </div>
   {% endif %}
 </div>

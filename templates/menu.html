@@ -1,44 +1,70 @@
 {% url 'home' as home_url %}
+
+</br>
 <ul class="menu {% if horizontal %}nav mb-4 mb-md-0{% endif %}{% if request.get_full_path == home_url %} no-border{% endif %}">
-  {% for item in menu_items %}
-  {% with children=item.get_children %}
-    <li class="{% if horizontal %}nav-item{% endif %} {% if children %}nav-item__dropdown{% endif %} menu__item">
-      <a class="{% if horizontal %}nav-link{% endif %}" href="{{ item.get_url }}">
-        {{ item }}
-      </a>
-      {% if children %}
-        <div class="{% if horizontal %}nav-item__dropdown-content{% else %}nav-item__submenu{% endif %}">
+      {% if horizontal %}
+      <div class="dropdown">
+
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Список товаров
+      </button>
+      <div class="dropdown-menu dropdown-menu1" aria-labelledby="dropdownMenuButton">
+      {% endif %}
+      {% for item in menu_items %}
+      {% with children=item.get_children %}
+      <li class="{% if horizontal %}nav-item{% endif %} {% if children %}  btn-group dropright{% endif %} menu__item">
+
+
+
+        {% if children %}
+        <a class="{% if horizontal %}nav-link{% endif %} dropdown-toggle" href="{{ item.get_url }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{ item }}
+        </a>
+
+        {% else %}
+        <a class="{% if horizontal %}nav-link{% endif %}" href="{{ item.get_url }}">
+          {{ item }}
+        </a>
+        {% endif %}
+        {% if children %}
+        <div class=" {% if horizontal %}dropdown-menu{% else %}nav-item__submenu{% endif %}">
           <div class="container">
             <ul>
-            {% for child in children %}
+              {% for child in children %}
               <li>
                 <a href="{{ child.get_url }}">
                   {% if horizontal %}
-                    <strong>{{ child }}</strong>
+                  <strong>{{ child }}</strong>
                   {% else %}
-                    {{ child }}
+                  {{ child }}
                   {% endif %}
                 </a>
               </li>
               {% with grandchildren=child.get_children %}
-                {% if grandchildren %}
-                <ul>
-                  {% for grandchild in grandchildren %}
-                    <li>
-                      <a href="{{ grandchild.get_url }}">
-                        {{ grandchild }}
-                      </a>
-                    </li>
-                  {% endfor %}
-                </ul>
-                {% endif %}
+              {% if grandchildren %}
+              <ul>
+                {% for grandchild in grandchildren %}
+                <li>
+                  <a href="{{ grandchild.get_url }}">
+                    {{ grandchild }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
               {% endwith %}
-            {% endfor %}
+              {% endfor %}
             </ul>
           </div>
         </div>
+        {% endif %}
+      </li>
+      {% endwith %}
+      {% endfor %}
+
+      {% if horizontal %}
+      </div>
+      </div>
+      </br>
       {% endif %}
-    </li>
-  {% endwith %}
-  {% endfor %}
 </ul>

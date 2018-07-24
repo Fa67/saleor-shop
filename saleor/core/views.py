@@ -13,7 +13,7 @@ from ..seo.schema.webpage import get_webpage_schema
 
 
 def home(request):
-    products = products_for_homepage()[:8]
+    products = products_for_homepage()
     products = list(products_with_availability(
         products, discounts=request.discounts, taxes=request.taxes,
         local_currency=request.currency))

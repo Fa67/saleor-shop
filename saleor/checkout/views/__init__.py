@@ -50,7 +50,7 @@ def checkout_index(request, cart):
 def checkout_shipping_address(request, cart):
     """Display the correct shipping address step."""
     if request.user.is_authenticated:
-        return user_shipping_address_view(request, cart)
+        return user_shipping_address_view(request, cart)    
     return anonymous_user_shipping_address_view(request, cart)
 
 

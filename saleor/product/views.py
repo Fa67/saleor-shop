@@ -51,6 +51,7 @@ def product_details(request, slug, product_id, form=None):
     """
     products = products_with_details(user=request.user)
     product = get_object_or_404(products, id=product_id)
+    product_suplier_percentage = product.suplier.orders.get_or_create(status="CURRENT", suplier=product.suplier)[0].total_net.amount / 100
     if product.get_slug() != slug:
         return HttpResponsePermanentRedirect(product.get_absolute_url())
     today = datetime.date.today()
@@ -73,6 +74,7 @@ def product_details(request, slug, product_id, form=None):
         'form': form,
         'availability': availability,
         'product': product,
+        'product_suplier_percentage': product_suplier_percentage,
         'product_attributes': product_attributes,
         'product_images': product_images,
         'show_variant_picker': show_variant_picker,

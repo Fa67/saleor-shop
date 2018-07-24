@@ -15,7 +15,7 @@ from ...core.i18n import VAT_RATE_TYPE_TRANSLATIONS
 from ...core.utils.taxes import DEFAULT_TAX_RATE_NAME, include_taxes_in_prices
 from ...product.models import (
     AttributeChoiceValue, Category, Collection, Product, ProductAttribute,
-    ProductImage, ProductType, ProductVariant, VariantImage)
+    ProductImage, ProductType, ProductVariant, VariantImage, ProductSuplier)
 from ...product.thumbnails import create_product_thumbnails
 from ...product.utils.attributes import get_name_from_attributes
 from ..forms import ModelChoiceOrCreationField, OrderedModelMultipleChoiceField
@@ -193,7 +193,10 @@ class AttributesMixin(object):
                 attributes[smart_text(attr.pk)] = smart_text(value.pk)
         return attributes
 
+import logging
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 class ProductForm(forms.ModelForm, AttributesMixin):
     tax_rate = forms.ChoiceField(required=False)
 
@@ -201,30 +204,33 @@ class ProductForm(forms.ModelForm, AttributesMixin):
         model = Product
         exclude = ['attributes', 'product_type', 'updated_at']
         labels = {
-            'name': pgettext_lazy('Item name', 'Name'),
+            'name': pgettext_lazy('Item name', 'Название'),
             'description': pgettext_lazy('Description', 'Description'),
             'seo_description': pgettext_lazy(
-                'A SEO friendly description', 'SEO Friendly Description'),
-            'category': pgettext_lazy('Category', 'Category'),
-            'price': pgettext_lazy('Currency amount', 'Price'),
+                'A SEO friendly description', 'SEO Описание'),
+            'category': pgettext_lazy('Category', 'Категория'),
+            'price': pgettext_lazy('Currency amount', 'Цена'),
             'available_on': pgettext_lazy(
-                'Availability date', 'Publish product on'),
+                'Availability date', 'Продукт опубликован'),
             'is_published': pgettext_lazy(
-                'Product published toggle', 'Published'),
+                'Product published toggle', 'Опубликован'),
             'is_featured': pgettext_lazy(
                 'Featured product toggle',
-                'Feature this product on homepage'),
+                'Отображать на главной'),
             'collections': pgettext_lazy(
-                'Add to collection select', 'Collections'),
+                'Add to collection select', 'Коллекции'),
             'charge_taxes': pgettext_lazy(
-                'Charge taxes on product', 'Charge taxes on this product'),
+                'Charge taxes on product', 'Облагать налогом(лучше не трогать)'),
             'tax_rate': pgettext_lazy(
-                'Product tax rate type', 'Tax rate')}
+                'Product tax rate type', 'Tax rate'),
+            'suplier': pgettext_lazy(
+                'Add to collection select', 'Поставщик')}
 
     category = TreeNodeChoiceField(queryset=Category.objects.all())
     collections = forms.ModelMultipleChoiceField(
         required=False, queryset=Collection.objects.all())
     description = RichTextField()
+    suplier = forms.ModelChoiceField(queryset=ProductSuplier.objects.all())
 
     model_attributes_field = 'attributes'
 
@@ -246,10 +252,12 @@ class ProductForm(forms.ModelForm, AttributesMixin):
         self.fields['tax_rate'].choices = get_tax_rate_type_choices()
         if include_taxes_in_prices():
             self.fields['price'].label = pgettext_lazy(
-                'Currency gross amount', 'Gross price')
+                'Currency gross amount', 'Цена')
         else:
             self.fields['price'].label = pgettext_lazy(
                 'Currency net amount', 'Net price')
+        self.fields['suplier'].label = pgettext_lazy(
+            'Currency net ', 'Поcтавщик')
 
     def clean_seo_description(self):
         seo_description = prepare_seo_description(

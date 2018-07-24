@@ -134,7 +134,7 @@ def account_delete(request):
     messages.success(
         request, pgettext(
             'Storefront message, when user requested his account removed',
-            'Please check your inbox for a confirmation e-mail.'))
+            'Проверьте свою почту для подтверждения.'))
     return HttpResponseRedirect(reverse('account:details') + '#settings')
 
 
@@ -148,9 +148,8 @@ def account_delete_confirm(request, token):
     if request.method == 'POST':
         user.delete()
         msg = pgettext(
-            'Account deleted',
-            'Your account was deleted successfully. '
-            'In case of any trouble or questions feel free to contact us.')
+            'Ваш аккаунт был успешно удален. '
+            'В случае каких-либо вопросов свяжитесь с нами.')
         messages.success(request, msg)
         return redirect('home')
 

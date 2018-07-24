@@ -8,7 +8,7 @@
 
 <html lang="{{ LANGUAGE_CODE }}" class="no-js" data-shipping-options-url="{% url 'cart:shipping-options' %}" data-cart-summary-url="{% url 'cart:summary' %}">
 <head>
-  <title>{% block title %}{{ site.name }}{% endblock %}</title>
+  <title>BlitzShop</title>
   {% block meta %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,46 @@
   {% include 'favicon.html' %}
   {% render_bundle 'storefront' 'css' attrs='async' %}
 
-  {% block stylesheet %}{% endblock stylesheet %}
+  {% block stylesheet %}
+  <style>
+
+
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-menu1 {display: block;}
+
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .dropdown:hover .dropdown-toggle {background-color: #f1f1f1;}
+
+  .dropdown-toggle {
+    border: none;
+  }
+
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+      position: relative;
+      display: inline-block;
+  }
+
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-menu1 {
+      display: none;
+      margin-top: -1px;
+      position: absolute;
+      background-color: #ffffff;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+  }
+
+  /* Links inside the dropdown */
+  .dropdown-menu1 a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+  }
+  </style>
+  {% endblock stylesheet %}
 
   {% block meta_tags %}
     <meta property="og:title" content="{{ site.name }}">
@@ -55,18 +94,17 @@
         </div>
         <div class="col-6">
           <ul class="float-right">
-            {% include "_language_picker.html" %}
             {% if user.is_authenticated %}
               {% if user.is_staff or request.impersonator.is_staff %}
                 <li>
                   <a href="{% url "dashboard:index" %}" target="_blank" rel="noopener">
-                    {% trans "Dashboard" context "Main navigation item" %}
+                    {% trans "Админтул" context "Main navigation item" %}
                   </a>
                 </li>
               {% endif %}
               <li>
                 <a href="{% url "account:details" %}">
-                  {% trans "Your account" context "Main navigation item" %}</a>
+                  {% trans "Ваш аккаунт" context "Main navigation item" %}</a>
               </li>
               {% if user.is_impersonate %}
                 <li>
@@ -77,17 +115,17 @@
               {% else %}
                 <li>
                   <a href="{% url "account:logout" %}">
-                    {% trans "Log out" context "Main navigation item" %}</a>
+                    {% trans "Выйти" context "Main navigation item" %}</a>
                 </li>
               {% endif %}
             {% else %}
               <li>
                 <a rel="nofollow" href="{% url "account:signup" %}">
-                  {% trans "Register" context "Main navigation item" %}</a>
+                  {% trans "Регистрация" context "Main navigation item" %}</a>
               </li>
               <li>
                 <a rel="nofollow" href="{% url "account:login" %}">
-                  {% trans "Log in" context "Main navigation item" %}
+                  {% trans "Войти" context "Main navigation item" %}
                 </a>
               </li>
             {% endif %}
@@ -102,7 +140,7 @@
           <div class="col-8 col-md-4 navbar__logo">
             <div class="menu-icon-mobile d-md-none navbar__brand__menu-toggle closed open">
               <svg data-src="{% static "images/mobile-menu.svg" %}" width="28px" height="20px"/>
-              <span>{% trans "menu" context "Hamburger button text" %}</span>
+              <span></span>
             </div>
             <a href="{% url 'home' %}">
               <svg data-src="{% static "images/logo.svg" %}" height="38px" width="176px"/>
@@ -119,7 +157,7 @@
                 </div>
                 <input class="form-control" type="text" name="q"
                        value="{% if query %}{{ query }}{% endif %}"
-                       placeholder="{% trans "Search for product" %}"
+                       placeholder="{% trans "Поиск товаров" %}"
                        required>
                 <button class="btn btn-link" type="submit">
                   <svg data-src="{% static "images/search.svg" %}" width="30" height="30"/>
@@ -131,7 +169,7 @@
             <div class="navbar__brand__cart float-right">
               <a rel="nofollow" class="cart__icon" href="{% url "cart:index" %}">
                 <span class="cart-label d-none d-md-inline-block">
-                  {% trans "Your Cart" context "Main navigation item" %}
+                  {% trans "Корзина" context "Main navigation item" %}
                 </span>
                 <div class="navbar__brand__cart__icon">
                   <svg data-src="{% static "images/cart.svg" %}" width="35" height="30"/>
@@ -190,7 +228,7 @@
           <ul>
             <li>
               <a rel="nofollow" href="{% url "cart:index" %}">
-                {% trans "Your Cart" context "Main navigation item" %}
+                {% trans "Корзина" context "Main navigation item" %}
               </a>
             </li>
             {% if user.is_authenticated %}
